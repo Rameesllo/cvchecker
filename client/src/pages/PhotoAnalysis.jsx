@@ -23,6 +23,18 @@ const PhotoAnalysis = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
 
+  const getErrorMessage = (err, defaultMsg) => {
+    if (err.response?.status === 404) {
+      return 'API server endpoint not found (404). Please make sure your Node.js backend server is started and running, and that VITE_API_URL is configured in your deployment settings.';
+    }
+    const errorData = err.response?.data?.error;
+    if (!errorData) return err.message || defaultMsg;
+    if (typeof errorData === 'object') {
+      return errorData.message || JSON.stringify(errorData);
+    }
+    return errorData;
+  };
+
   const handleFileSelect = (selectedFile) => {
     setFile(selectedFile);
     setPhotoUrl('');
@@ -49,10 +61,7 @@ const PhotoAnalysis = () => {
       setResult(analysisData);
     } catch (err) {
       console.error(err);
-      setError(
-        err.response?.data?.error ||
-        'Error uploading or analyzing portrait image. Please make sure OpenAI API keys are valid.'
-      );
+      setError(getErrorMessage(err, 'Error uploading or analyzing portrait image. Please make sure OpenAI API keys are valid.'));
       setFile(null);
     } finally {
       setUploading(false);
