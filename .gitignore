@@ -1,0 +1,25 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+
+# Environment files (sensitive keys)
+.env
+.env.local
+.env.*.local
+
+# Production builds
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
