@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '', // Empty because Vite proxy catches /api
+  baseURL: import.meta.env.VITE_API_URL || '', // Exposes target API server url if defined
   timeout: 120000 // 2 minutes, as OCR and OpenAI calls might take some time
 });
 
