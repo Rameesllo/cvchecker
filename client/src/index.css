@@ -78,8 +78,8 @@
 }
 
 /* Animated Gradient Texts */
-.text-gradient-cyan-purple {
-  background: linear-gradient(135deg, #00f2fe 0%, #a78bfa 100%);
+.text-gradient-cyan-blue {
+  background: linear-gradient(135deg, #00f2fe 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

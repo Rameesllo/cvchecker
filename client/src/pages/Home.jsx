@@ -48,7 +48,7 @@ const Home = ({ setCurrentPage }) => {
             className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-tight"
           >
             Optimize Your Professional <br className="hidden sm:inline" />
-            <span className="text-gradient-cyan-purple">Presence in Seconds</span>
+            <span className="text-gradient-cyan-blue">Presence in Seconds</span>
           </motion.h1>
 
           {/* Subtitle */}
@@ -63,7 +63,7 @@ const Home = ({ setCurrentPage }) => {
           <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={() => setCurrentPage('upload')}
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-neonCyan to-neonPurple text-darkBg font-extrabold text-base rounded-xl transition-all duration-300 hover:opacity-95 shadow-glass-glow hover:shadow-neon-border hover:scale-105 active:scale-95"
+              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-neonCyan to-blue-500 text-darkBg font-extrabold text-base rounded-xl transition-all duration-300 hover:opacity-95 shadow-glass-glow hover:shadow-neon-border hover:scale-105 active:scale-95"
             >
               Analyze Your Resume Now
             </button>
