@@ -18,8 +18,8 @@ const Navbar = ({ currentPage, setCurrentPage }) => {
             onClick={() => setCurrentPage('home')}
             className="flex items-center space-x-2 cursor-pointer group"
           >
-            <div className="px-2 h-10 rounded-xl bg-gradient-to-tr from-neonCyan to-neonPurple flex items-center justify-center text-darkBg font-bold text-sm shadow-glass-glow transition-transform duration-300 group-hover:scale-105">
-              LLO
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-neonCyan to-neonPurple flex items-center justify-center text-darkBg shadow-glass-glow transition-transform duration-300 group-hover:scale-105">
+              <RiScan2Line className="w-6 h-6" aria-hidden="true" />
             </div>
             <span className="font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-neonCyan bg-clip-text text-transparent group-hover:opacity-95 transition-opacity">
               <span className="inline sm:hidden">LLO</span>
