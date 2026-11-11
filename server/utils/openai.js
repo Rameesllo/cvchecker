@@ -104,29 +104,6 @@ const generateMockResumeAnalysis = (text) => {
 };
 
 /**
- * Generates a realistic mock portrait assessment containing structural warnings and flags.
- */
-const generateMockPhotoAnalysis = () => {
-  return {
-    photoScore: 68, // Lower grade to highlight need for correction
-    professionalAppearance: 72,
-    backgroundQuality: 60,
-    lightingQuality: 65,
-    imageClarity: 80,
-    linkedinSuitability: 66,
-    resumeSuitability: 50,
-    suggestions: [
-      "[Audit Warning] Cluttered background: The backdrop contains home clutter. We recommend using a clean, neutral, single-colored wall.",
-      "[Audit Warning] Incorrect lighting angles: The main light source is behind or to the side, casting shadows. Position light directly in front of you.",
-      "[Audit Warning] Non-professional photo: The headshot seems to be a cropped holiday photo. Use a front-facing headshot taken in professional attire.",
-      "[Audit Warning] Layout advise: Avoid embedding photos directly onto standard chronological resumes as they violate recruitment protocols in many regions.",
-      "[Audit Warning] Image sharpness is moderate. Ensure the picture has high sharpness and is free of pixelation."
-    ],
-    sandboxMode: true
-  };
-};
-
-/**
  * Sends extracted resume text to OpenAI to get structured evaluation scores and suggestions.
  * @param {string} text - The raw text content of the resume.
  * @returns {Promise<object>} - Structured ATS & HR evaluation.
@@ -192,71 +169,6 @@ export const analyzeResumeText = async (text) => {
     ) {
       console.warn('⚠️ OpenAI API Quota Exceeded. Falling back to dynamic mock analysis.');
       return generateMockResumeAnalysis(text);
-    }
-    throw error;
-  }
-};
-
-/**
- * Sends profile photo URL to OpenAI Vision to evaluate its professional quality.
- * @param {string} imageUrl - Cloudinary URL of the profile photo.
- * @returns {Promise<object>} - Visual composition and headshot quality feedback.
- */
-export const analyzeProfilePhoto = async (imageUrl) => {
-  if (!process.env.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is not defined in environment variables');
-  }
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [
-        {
-          role: 'system',
-          content: `You are an executive career coach and personal branding expert. Analyze the profile image provided and rate its suitability for standard professional contexts (LinkedIn profiles, professional portfolios). Return only a valid JSON object matching this schema:
-{
-  "photoScore": <0-100 integer>,
-  "professionalAppearance": <0-100 integer>,
-  "backgroundQuality": <0-100 integer>,
-  "lightingQuality": <0-100 integer>,
-  "imageClarity": <0-100 integer>,
-  "linkedinSuitability": <0-100 integer>,
-  "resumeSuitability": <0-100 integer>,
-  "suggestions": [<string list of improvement actions>]
-}`
-        },
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: 'Analyze this professional profile photo.'
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: imageUrl
-              }
-            }
-          ]
-        }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.2
-    });
-
-    return JSON.parse(response.choices[0].message.content);
-  } catch (error) {
-    console.error('OpenAI Error in analyzeProfilePhoto:', error);
-    
-    if (
-      error.code === 'insufficient_quota' ||
-      error.status === 429 ||
-      error.message?.includes('quota') ||
-      error.message?.includes('billing')
-    ) {
-      console.warn('⚠️ OpenAI API Quota Exceeded. Falling back to mock photo evaluation.');
-      return generateMockPhotoAnalysis();
     }
     throw error;
   }

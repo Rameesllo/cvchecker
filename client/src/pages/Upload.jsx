@@ -1,178 +1,148 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RiFileLine, RiArrowRightLine, RiCpuLine, RiLoader4Line } from 'react-icons/ri';
-import FileUpload from '../components/FileUpload';
-import GlassCard from '../components/GlassCard';
-import { uploadResumeFile, analyzeResumeText } from '../services/api';
+import { analyzeResumeText, uploadResumeFile } from '../services/api';
+
+const allowedExtensions = ['.pdf', '.docx', '.png', '.jpg', '.jpeg'];
+const maxFileSize = 5 * 1024 * 1024;
 
 const Upload = ({ setResumeResult, setCurrentPage }) => {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [extractedText, setExtractedText] = useState('');
-  const [cloudinaryUrl, setCloudinaryUrl] = useState('');
+  const [resumeUrl, setResumeUrl] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [error, setError] = useState('');
 
-  const getErrorMessage = (err, defaultMsg) => {
-    if (err.response?.status === 404) {
-      return 'API server endpoint not found (404). Please make sure your Node.js backend server is started and running, and that VITE_API_URL is configured in your deployment settings.';
-    }
-    const errorData = err.response?.data?.error;
-    if (!errorData) return err.message || defaultMsg;
-    if (typeof errorData === 'object') {
-      return errorData.message || JSON.stringify(errorData);
-    }
-    return errorData;
-  };
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files?.[0];
+    if (!selectedFile) return;
 
-  const handleFileSelect = (selectedFile) => {
+    const extension = selectedFile.name.slice(selectedFile.name.lastIndexOf('.')).toLowerCase();
+    if (!allowedExtensions.includes(extension)) {
+      setError('Choose a PDF, DOCX, PNG, JPG, or JPEG file.');
+      setFile(null);
+      return;
+    }
+
+    if (selectedFile.size > maxFileSize) {
+      setError('File must be smaller than 5 MB.');
+      setFile(null);
+      return;
+    }
+
+    setError('');
     setFile(selectedFile);
     setExtractedText('');
-    setCloudinaryUrl('');
-    setError('');
+    setResumeUrl('');
   };
 
-  const handleUploadAndExtract = async () => {
+  const handleUpload = async () => {
     if (!file) return;
     setUploading(true);
-    setUploadProgress(0);
+    setProgress(0);
     setError('');
 
     try {
-      const data = await uploadResumeFile(file, (progress) => {
-        setUploadProgress(progress);
-      });
-      setCloudinaryUrl(data.url);
-      setExtractedText(data.text);
-    } catch (err) {
-      console.error(err);
-      setError(getErrorMessage(err, 'Failed to process file. Make sure it is a readable document or valid image.'));
-      setFile(null);
+      const result = await uploadResumeFile(file, setProgress);
+      setExtractedText(result.text);
+      setResumeUrl(result.url);
+    } catch (uploadError) {
+      console.error(uploadError);
+      setError(uploadError.message || 'Could not process this file.');
     } finally {
       setUploading(false);
     }
   };
 
-  const handleStartAnalysis = async () => {
+  const handleAnalysis = async () => {
     if (!extractedText) return;
     setAnalyzing(true);
     setError('');
 
     try {
       const result = await analyzeResumeText(extractedText);
-      // Inject the uploaded resume URL into the result so we can reference it
-      setResumeResult({ ...result, resumeUrl: cloudinaryUrl });
+      setResumeResult({ ...result, resumeUrl });
       setCurrentPage('dashboard');
-    } catch (err) {
-      console.error(err);
-      setError(getErrorMessage(err, 'Error communicating with OpenAI APIs. Please check your credentials.'));
+    } catch (analysisError) {
+      console.error(analysisError);
+      setError(analysisError.message || 'Could not analyze this resume.');
     } finally {
       setAnalyzing(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 relative">
-      <div className="glow-blur glow-cyan w-[250px] h-[250px] top-10 left-[20%]"></div>
-      <div className="glow-blur glow-purple w-[300px] h-[300px] bottom-10 right-[20%]"></div>
+    <section className="mx-auto max-w-2xl px-6 py-12">
+      <h1 className="text-3xl font-bold text-slate-900">Check your resume</h1>
+      <p className="mt-2 text-slate-600">Choose a file up to 5 MB to get started.</p>
 
-      <div className="space-y-8 relative z-10">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-            Evaluate Your <span className="text-gradient-cyan-purple">Resume</span>
-          </h2>
-          <p className="text-sm text-glassTextMuted max-w-lg mx-auto">
-            Upload your resume document to securely host it, extract structural contents, and run full-scale AI analysis.
-          </p>
-        </div>
+      {error && (
+        <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </p>
+      )}
 
-        {error && (
-          <div className="p-4 bg-red-950/40 border border-red-500/30 text-red-200 text-sm rounded-xl">
-            ⚠️ {error}
+      <div className="mt-8 rounded-xl border border-slate-200 p-6">
+        {!extractedText ? (
+          <div className="space-y-4">
+            <label htmlFor="resume-file" className="block text-sm font-medium text-slate-700">
+              Resume file (PDF, DOCX, PNG, JPG)
+            </label>
+            <input
+              id="resume-file"
+              type="file"
+              accept=".pdf,.docx,.png,.jpg,.jpeg"
+              onChange={handleFileChange}
+              disabled={uploading}
+              className="block w-full text-sm text-slate-600 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:font-semibold file:text-blue-700 hover:file:bg-blue-100"
+            />
+            {file && <p className="text-sm text-slate-600">{file.name}</p>}
+            {uploading && (
+              <p className="text-sm text-slate-600" aria-live="polite">
+                Processing file: {progress}%
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleUpload}
+              disabled={!file || uploading}
+              className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {uploading ? 'Processing…' : 'Continue'}
+            </button>
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between gap-4">
+              <h2 className="font-semibold text-slate-900">Resume text</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                  setExtractedText('');
+                  setResumeUrl('');
+                }}
+                disabled={analyzing}
+                className="text-sm font-medium text-blue-700 hover:underline disabled:opacity-50"
+              >
+                Choose another file
+              </button>
+            </div>
+            <pre className="mt-4 max-h-72 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+              {extractedText}
+            </pre>
+            <button
+              type="button"
+              onClick={handleAnalysis}
+              disabled={analyzing}
+              className="mt-5 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:cursor-wait disabled:opacity-50"
+            >
+              {analyzing ? 'Analyzing…' : 'Analyze resume'}
+            </button>
           </div>
         )}
-
-        <GlassCard hover={false} className="space-y-6">
-          {!extractedText ? (
-            /* Upload step */
-            <div className="space-y-6">
-              <FileUpload
-                onFileSelect={handleFileSelect}
-                uploading={uploading}
-                progress={uploadProgress}
-                title="Drag & Drop Resume"
-                description="Supports PDF, DOCX, PNG, JPG, JPEG up to 5MB"
-              />
-
-              {file && !uploading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-end"
-                >
-                  <button
-                    onClick={handleUploadAndExtract}
-                    className="px-6 py-3 bg-neonCyan text-darkBg font-bold text-sm rounded-xl flex items-center space-x-2 hover:shadow-neon-border hover:scale-102 transition-all duration-200 active:scale-95"
-                  >
-                    <span>Upload & Extract Text</span>
-                    <RiArrowRightLine className="w-4 h-4" />
-                  </button>
-                </motion.div>
-              )}
-            </div>
-          ) : (
-            /* Analysis Preview Step */
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="space-y-6"
-            >
-              <div className="flex items-center justify-between border-b border-glassBorder pb-4">
-                <div className="flex items-center space-x-2">
-                  <RiFileLine className="w-5 h-5 text-neonCyan" />
-                  <span className="font-bold text-white text-sm sm:text-base">Extracted Resume Text</span>
-                </div>
-                <button
-                  onClick={() => {
-                    setFile(null);
-                    setExtractedText('');
-                    setCloudinaryUrl('');
-                  }}
-                  className="text-xs text-red-400 hover:underline font-semibold"
-                  disabled={analyzing}
-                >
-                  Upload Different File
-                </button>
-              </div>
-
-              {/* Text Preview Box */}
-              <div className="bg-slate-950/60 border border-glassBorder rounded-xl p-4 max-h-[300px] overflow-y-auto text-xs font-mono text-glassTextMuted leading-relaxed scrollbar">
-                {extractedText}
-              </div>
-
-              {/* Action and loader */}
-              <div className="flex items-center justify-end">
-                {analyzing ? (
-                  <div className="flex items-center space-x-2 text-neonPurple font-semibold text-sm">
-                    <RiLoader4Line className="w-5 h-5 animate-spin" />
-                    <span>Analyzing resume with OpenAI...</span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleStartAnalysis}
-                    className="px-8 py-3.5 bg-gradient-to-r from-neonCyan to-neonPurple text-darkBg font-extrabold text-sm rounded-xl flex items-center space-x-2 hover:shadow-neon-border hover:scale-102 transition-all duration-200 active:scale-95 shadow-glass-glow"
-                  >
-                    <RiCpuLine className="w-4 h-4" />
-                    <span>Run AI Analysis</span>
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </GlassCard>
       </div>
-    </div>
+    </section>
   );
 };
 

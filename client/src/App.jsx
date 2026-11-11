@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import Home from './pages/Home';
 import Upload from './pages/Upload';
 import Dashboard from './pages/Dashboard';
-import PhotoAnalysis from './pages/PhotoAnalysis';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [resumeResult, setResumeResult] = useState(null);
 
-  // Determine which page viewport to mount
   const renderPage = () => {
     switch (currentPage) {
-      case 'home':
-        return <Home setCurrentPage={setCurrentPage} />;
       case 'upload':
         return (
           <Upload
@@ -30,56 +23,49 @@ const App = () => {
             setCurrentPage={setCurrentPage}
           />
         );
-      case 'photo':
-        return <PhotoAnalysis />;
+      case 'home':
       default:
         return <Home setCurrentPage={setCurrentPage} />;
     }
   };
 
-  const pageTransition = {
-    initial: { opacity: 0, y: 8 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -8 },
-    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
-  };
-
   return (
-    <div 
-      className="flex flex-col min-h-screen relative bg-[#060810]"
-      style={{
-        backgroundImage: 'linear-gradient(rgba(6, 8, 16, 0.78), rgba(6, 8, 16, 0.85)), url("/background.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      {/* Dynamic atmospheric light dots */}
-      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-neonCyan/5 blur-[120px] pointer-events-none z-0"></div>
-      <div className="absolute bottom-[20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-neonPurple/5 blur-[120px] pointer-events-none z-0"></div>
-
-      {/* Navigation bar */}
-      <Navbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
-
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            variants={pageTransition}
-            className="w-full"
+    <div className="flex min-h-screen flex-col bg-white text-slate-900">
+      <header className="border-b border-slate-200">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <button
+            type="button"
+            onClick={() => setCurrentPage('home')}
+            className="text-lg font-bold tracking-tight text-slate-900"
           >
-            {renderPage()}
-          </motion.div>
-        </AnimatePresence>
+            Resume Checker
+          </button>
+          <div className="flex items-center gap-2 sm:gap-5">
+            <button
+              type="button"
+              onClick={() => setCurrentPage('home')}
+              className="px-2 py-2 text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Home
+            </button>
+            <button
+              type="button"
+              onClick={() => setCurrentPage('upload')}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+            >
+              Check resume
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      <main className="mx-auto w-full max-w-6xl flex-1">
+        {renderPage()}
       </main>
 
-      {/* Footer bar */}
-      <Footer />
+      <footer className="border-t border-slate-200 px-6 py-4 text-center text-sm text-slate-500">
+        Resume Checker
+      </footer>
     </div>
   );
 };

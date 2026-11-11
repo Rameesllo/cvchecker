@@ -114,29 +114,6 @@ const generateLocalMockResumeAnalysis = (text) => {
 };
 
 /**
- * local mock photo grading
- */
-const generateLocalMockPhotoAnalysis = () => {
-  return {
-    photoScore: 68, // Lower grade to highlight need for correction
-    professionalAppearance: 72,
-    backgroundQuality: 60,
-    lightingQuality: 65,
-    imageClarity: 80,
-    linkedinSuitability: 66,
-    resumeSuitability: 50,
-    suggestions: [
-      "[Audit Warning] Cluttered background: The backdrop contains home clutter. We recommend using a clean, neutral, single-colored wall.",
-      "[Audit Warning] Incorrect lighting angles: The main light source is behind or to the side, casting shadows. Position light directly in front of you.",
-      "[Audit Warning] Non-professional photo: The headshot seems to be a cropped holiday photo. Use a front-facing headshot taken in professional attire.",
-      "[Audit Warning] Layout advise: Avoid embedding photos directly onto standard chronological resumes as they violate recruitment protocols in many regions.",
-      "[Audit Warning] Image sharpness is moderate. Ensure the picture has high sharpness and is free of pixelation."
-    ],
-    sandboxMode: true
-  };
-};
-
-/**
  * Simulates uploading a resume file and returning mock text content.
  */
 export const uploadResumeFile = async (file, onProgress) => {
@@ -182,40 +159,10 @@ export const uploadResumeFile = async (file, onProgress) => {
 };
 
 /**
- * Simulates uploading a profile photo file and returns a local preview URL.
- */
-export const uploadPhotoFile = async (file, onProgress) => {
-  await simulateProgress(onProgress);
-  
-  // Create local preview URL directly so user actually sees their portrait in the scorecard
-  const previewUrl = URL.createObjectURL(file);
-  
-  return {
-    url: previewUrl
-  };
-};
-
-/**
  * Simulates analyzing resume text client-side.
  */
 export const analyzeResumeText = async (text) => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 1500));
   return generateLocalMockResumeAnalysis(text);
-};
-
-/**
- * Simulates analyzing profile photo URL client-side.
- */
-export const analyzePhotoUrl = async (imageUrl) => {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-  return generateLocalMockPhotoAnalysis();
-};
-
-export default {
-  uploadResumeFile,
-  uploadPhotoFile,
-  analyzeResumeText,
-  analyzePhotoUrl
 };

@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { extractTextFromBuffer } from '../utils/extractor.js';
-import { analyzeResumeText, analyzeProfilePhoto } from '../utils/openai.js';
+import { analyzeResumeText } from '../utils/openai.js';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -68,38 +68,6 @@ export const uploadResume = async (req, res) => {
 };
 
 /**
- * Uploads a profile photo to Cloudinary.
- */
-export const uploadPhoto = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No image file uploaded.' });
-    }
-
-    // Ensure it is indeed an image
-    if (!req.file.mimetype.startsWith('image/')) {
-      return res.status(400).json({ error: 'Uploaded file is not a valid image.' });
-    }
-
-    // Upload to Cloudinary under profile_photos
-    const uploadResult = await uploadFromBuffer(req.file.buffer, {
-      folder: 'profile_photos',
-      public_id: `photo_${Date.now()}`
-    });
-
-    return res.status(200).json({
-      message: 'Photo uploaded successfully.',
-      url: uploadResult.secure_url
-    });
-  } catch (error) {
-    console.error('Error in uploadPhoto controller:', error);
-    return res.status(500).json({
-      error: error.message || 'Server error occurred while uploading the photo.'
-    });
-  }
-};
-
-/**
  * Invokes OpenAI to analyze extracted resume text.
  */
 export const analyzeResume = async (req, res) => {
@@ -116,27 +84,6 @@ export const analyzeResume = async (req, res) => {
     console.error('Error in analyzeResume controller:', error);
     return res.status(500).json({
       error: error.message || 'Server error occurred while analyzing the resume.'
-    });
-  }
-};
-
-/**
- * Invokes OpenAI Vision to analyze profile photo from a Cloudinary URL.
- */
-export const analyzePhoto = async (req, res) => {
-  try {
-    const { imageUrl } = req.body;
-    if (!imageUrl) {
-      return res.status(400).json({ error: 'No image URL provided for analysis.' });
-    }
-
-    const analysis = await analyzeProfilePhoto(imageUrl);
-
-    return res.status(200).json(analysis);
-  } catch (error) {
-    console.error('Error in analyzePhoto controller:', error);
-    return res.status(500).json({
-      error: error.message || 'Server error occurred while analyzing the profile photo.'
     });
   }
 };

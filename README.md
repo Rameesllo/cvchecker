@@ -1,6 +1,6 @@
 # ResumeIQ AI
 
-ResumeIQ AI is a production-ready, AI-powered web application that evaluates professional resumes and portrait headshots. Users can upload a resume (PDF, DOCX, or Image formats) or a separate profile photo, securely store them in Cloudinary, automatically extract text (including via OCR for images), and send the results to OpenAI for comprehensive evaluation dashboards and vision-based portrait branding suggestions.
+Resume Checker is a simple web app for uploading resumes and viewing feedback.
 
 ## Key Features
 
@@ -11,8 +11,6 @@ ResumeIQ AI is a production-ready, AI-powered web application that evaluates pro
    - Runs advanced OCR processing on image-based resumes (`tesseract.js`).
 3. **Deep ATS & HR Audit**: Evaluates overall scores, ATS compatibility, skills alignment, work experience, projects, education, and communication.
 4. **Actionable Feedback**: Pinpoints exact strengths, weaknesses, layout suggestions, and copy edits.
-5. **AI Profile Photo Review**: Multi-modal vision analysis evaluating lighting, appearance, background, image clarity, and LinkedIn/resume suitability.
-6. **Premium Glassmorphic UI**: Responsive dark mode SaaS theme with smooth Framer Motion entry and tab animations.
 
 ---
 
@@ -22,7 +20,6 @@ ResumeIQ AI is a production-ready, AI-powered web application that evaluates pro
 - **Vite + React.js** (SPA tabs routing)
 - **Tailwind CSS** (Custom dark layout theme + glassmorphism utility classes)
 - **Framer Motion** (Dynamic transition animations)
-- **React Icons** & **Axios**
 
 ### Backend (Server)
 - **Node.js** & **Express.js** (JSON API server)
@@ -39,9 +36,9 @@ ResumeIQ AI is a production-ready, AI-powered web application that evaluates pro
 d:/llo/cv checker/
 ├── client/                  # Vite + React Client
 │   ├── src/
-│   │   ├── components/      # GlassCard, Progress bars, Upload dropzone, Navbar, Footer
-│   │   ├── pages/           # Home, Upload, Dashboard, PhotoAnalysis
-│   │   ├── services/        # Axios API client
+│   │   ├── components/      # Glass cards, progress indicators, and upload dropzone
+│   │   ├── pages/           # Home, Upload, Dashboard
+│   │   ├── services/        # Resume analysis helpers
 │   │   ├── index.css
 │   │   ├── main.jsx
 │   │   └── App.jsx
