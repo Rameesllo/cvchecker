@@ -65,7 +65,7 @@ const Home = ({ setCurrentPage }) => {
               onClick={() => setCurrentPage('upload')}
               className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-neonCyan to-blue-500 text-darkBg font-extrabold text-base rounded-xl transition-all duration-300 hover:opacity-95 shadow-glass-glow hover:shadow-neon-border hover:scale-105 active:scale-95"
             >
-              Analyze Your Resume Now
+              Analyze Your sdvaccaResume Now
             </button>
             <button
               onClick={() => setCurrentPage('photo')}
