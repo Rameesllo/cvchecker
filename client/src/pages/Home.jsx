@@ -56,7 +56,7 @@ const Home = ({ setCurrentPage }) => {
             variants={itemVariants}
             className="max-w-2xl mx-auto text-base sm:text-lg md:text-xl text-glassTextMuted leading-relaxed"
           >
-            Upload your redcdacwvefeqsume and professional portrait. Our advanced AI scans for ATS compatibility, evaluates skills alignment, checks professional formatting, and grades headshot photography suitability.
+            Upload your redcdacwvefegergwqsume and professional portrait. Our advanced AI scans for ATS compatibility, evaluates skills alignment, checks professional formatting, and grades headshot photography suitability.
           </motion.p>
 
           {/* Action Button */}
